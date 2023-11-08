@@ -102,3 +102,8 @@ def generate_client_fn(trainloaders, valloaders, num_classes):
 
     # return the function to spawn client
     return client_fn
+
+fl.client.start_numpy_client(
+    server_address="10.2.0.29:9000",
+    client=FlowerClient()
+)

@@ -14,6 +14,7 @@ from server import get_on_fit_config, get_evaluate_fn
 
 # A decorator for Hydra. This tells hydra to by default load the config in conf/base.yaml
 @hydra.main(config_path="conf", config_name="base", version_base=None)
+
 def main(cfg: DictConfig):
     ## 1. Parse config & get experiment output dir
     print(OmegaConf.to_yaml(cfg))
@@ -43,17 +44,23 @@ def main(cfg: DictConfig):
 
     ## 5. Start Simulation
 
-    history = fl.simulation.start_simulation(
-        client_fn=client_fn,  # a function that spawns a particular client
-        num_clients=cfg.num_clients,  # total number of clients
-        config=fl.server.ServerConfig(
-            num_rounds=cfg.num_rounds
-        ),  # minimal config for the server loop telling the number of rounds in FL
-        strategy=strategy,  # our strategy of choice
-        client_resources={
-            "num_cpus": 2,
-            "num_gpus": 0.0,
-        },
+    # history = fl.simulation.start_simulation(
+    #     client_fn=client_fn,  # a function that spawns a particular client
+    #     num_clients=cfg.num_clients,  # total number of clients
+    #     config=fl.server.ServerConfig(
+    #         num_rounds=cfg.num_rounds
+    #     ),  # minimal config for the server loop telling the number of rounds in FL
+    #     strategy=strategy,  # our strategy of choice
+    #     client_resources={
+    #         "num_cpus": 2,
+    #         "num_gpus": 0.0,
+    #     },
+    # )
+
+    fl.server.start_server(
+        server_address="10.2.0.29:9000",
+        config=fl.server.ServerConfig(num_rounds=3),
+        strategy=strategy,
     )
 
     ## 6. Save your results
