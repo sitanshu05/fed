@@ -8,12 +8,12 @@ from omegaconf import DictConfig, OmegaConf
 import flwr as fl
 
 from dataset import prepare_dataset
-from client import generate_client_fn
-from server import get_on_fit_config, get_evaluate_fn
+# from client import generate_client_fn
+from server_helper import get_on_fit_config, get_evaluate_fn
 
 
 # A decorator for Hydra. This tells hydra to by default load the config in conf/base.yaml
-@hydra.main(config_path="conf", config_name="base", version_base=None)
+@hydra.main(config_path="../conf", config_name="base", version_base=None)
 
 def main(cfg: DictConfig):
     ## 1. Parse config & get experiment output dir
@@ -22,12 +22,12 @@ def main(cfg: DictConfig):
 
     ## 2. Prepare your dataset
 
-    trainloaders, validationloaders, testloader = prepare_dataset(
+    testloader = prepare_dataset(
         cfg.num_clients, cfg.batch_size
     )
 
-    ## 3. Define your clients
-    client_fn = generate_client_fn(trainloaders, validationloaders, cfg.num_classes)
+    # ## 3. Define your clients
+    # client_fn = generate_client_fn(trainloaders, validationloaders, cfg.num_classes)
 
     ## 4. Define your strategy
     strategy = fl.server.strategy.FedAvg(

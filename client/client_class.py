@@ -11,12 +11,12 @@ from model import Net, train, test
 class FlowerClient(fl.client.NumPyClient):
     """Define a Flower Client."""
 
-    def __init__(self, trainloader, vallodaer, num_classes) -> None:
+    def __init__(self, trainloader, valloader, num_classes) -> None:
         super().__init__()
 
         # the dataloaders that point to the data associated to this client
         self.trainloader = trainloader
-        self.valloader = vallodaer
+        self.valloader = valloader
 
         # a model that is randomly initialised at first
         self.model = Net(num_classes)
@@ -81,6 +81,11 @@ class FlowerClient(fl.client.NumPyClient):
         return float(loss), len(self.valloader), {"accuracy": accuracy}
 
 
+
+
+##for simulation only 
+
+
 def generate_client_fn(trainloaders, valloaders, num_classes):
     """Return a function that can be used by the VirtualClientEngine.
 
@@ -96,14 +101,9 @@ def generate_client_fn(trainloaders, valloaders, num_classes):
         # dataloaders as it's local data.
         return FlowerClient(
             trainloader=trainloaders[int(cid)],
-            vallodaer=valloaders[int(cid)],
+            valloader=valloaders[int(cid)],
             num_classes=num_classes,
         )
 
     # return the function to spawn client
     return client_fn
-
-fl.client.start_numpy_client(
-    server_address="10.2.0.29:9000",
-    client=FlowerClient()
-)
